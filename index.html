@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>احجز طاولتك - نافذة ذكية</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <button class="booking-btn" id="openBookingBtn">احجز طاولتك الآن</button>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="smart-modal">
+            <span class="close-btn" id="closeModalBtn">&times;</span>
+            <div class="modal-icon">✨</div>
+            <h3 id="modalTitle">جاري تحميل النظام الذكي...</h3>
+            <p id="modalMessage">أهلاً بك! نحن نجهز لك أفضل تجربة حجز.</p>
+            
+            <div class="info-box">
+                <span>لغة التصفح الحالية:</span>
+                <span class="info-tag" id="userLanguage">-</span>
+            </div>
+
+            <div class="info-box">
+                <span>سرعة اتصالك الحالية:</span>
+                <span class="info-tag" id="connectionSpeed">جاري القياس...</span>
+            </div>
+
+            <button class="confirm-btn">متابعة عملية الحجز</button>
+        </div>
+    </div>
+
+    <script>
+        const openBtn = document.getElementById('openBookingBtn');
+        const closeBtn = document.getElementById('closeModalBtn');
+        const overlay = document.getElementById('modalOverlay');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessage = document.getElementById('modalMessage');
+        const userLangElement = document.getElementById('userLanguage');
+        const speedElement = document.getElementById('connectionSpeed');
+
+        openBtn.addEventListener('click', () => {
+            overlay.classList.add('active');
+            runSmartFeatures();
+        });
+
+        closeBtn.addEventListener('click', () => {
+            overlay.classList.remove('active');
+        });
+
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) overlay.classList.remove('active');
+        });
+
+        function runSmartFeatures() {
+            const browserLang = navigator.language || navigator.userLanguage;
+            userLangElement.textContent = browserLang.toUpperCase();
+
+            if (browserLang.startsWith('ar')) {
+                modalTitle.textContent = "نافذة الحجز الذكية";
+                modalMessage.textContent = "أهلاً بك في نظامنا المطور!";
+            } else {
+                modalTitle.textContent = "Smart Booking System";
+                modalMessage.textContent = "Welcome to our premium system!";
+            }
+
+            if (navigator.connection) {
+                const speedMbps = navigator.connection.downlink;
+                speedElement.textContent = speedMbps + " Mbps";
+            } else {
+                speedElement.textContent = "متصل (جيد)";
+            }
+        }
+    </script>
+</body>
+</html>
