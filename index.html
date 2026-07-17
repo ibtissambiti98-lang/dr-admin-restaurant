@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مطعم الوردة الذهبية الفاخر | L'Étoile Dorée</title>
+    <style>
+        :root {
+            --gold: #c5a880;
+            --gold-hover: #e2d1b9;
+            --dark-black: #0a0a0a;
+            --card-bg: #121212;
+            --text-gray: #b0b0b0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--dark-black);
+            color: #ffffff;
+            line-height: 1.6;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 8%;
+            background-color: rgba(10, 10, 10, 0.95);
+            border-bottom: 1px solid rgba(197, 168, 128, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .lang-switcher {
+            display: flex;
+            gap: 10px;
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: #fff;
+            padding: 6px 14px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .lang-btn:hover, .lang-btn.active {
+            background-color: var(--gold);
+            color: var(--dark-black);
+        }
+
+        .hero {
+            position: relative;
+            min-height: 75vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.7)), 
+                        url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1920') no-repeat center center/cover;
+            padding: 80px 20px;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            color: var(--gold);
+            margin-bottom: 20px;
+            font-weight: 800;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero p {
+            font-size: 18px;
+            max-width: 700px;
+            color: #e0e0e0;
+            margin-bottom: 35px;
+            line-height: 1.8;
+        }
+
+        .cta-btn {
+            background-color: var(--gold);
+            color: var(--dark-black);
+            border: none;
+            padding: 16px 45px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(197, 168, 128, 0.4);
+        }
+
+        .cta-btn:hover {
+            background-color: var(--gold-hover);
+            transform: translateY(-3px);
+        }
+
+        .section-header {
+            text-align: center;
+            padding: 80px 20px 40px;
+        }
+
+        .section-title {
+            color: var(--gold);
+            font-size: 36px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 2px;
+            background-color: var(--gold);
+            margin: 10px auto 0;
+        }
+
+        .section-desc {
+            color: var(--text-gray);
+            max-width: 600px;
+            margin: 0 auto;
+            font-size: 16px;
+        }
+
+        .menu-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            padding: 0 20px 80px;
+        }
+
+        .menu-card {
+            background-color: var(--card-bg);
+            border: 1px solid rgba(197, 168, 128, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--gold);
+            box-shadow: 0 10px 20px rgba(197, 168, 128, 0.1);
+        }
+
+        .menu-img {
+            height: 220px;
+            width: 100%;
+            object-fit: cover;
+            background-color: #222;
+        }
+
+        .menu-info {
+            padding: 25px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .menu-info h3 {
+            color: var(--gold);
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+
+        .price {
+            font-size: 22px;
+            color: var(--gold);
+            font-weight: bold;
+        }
+
+        .order-btn {
+            background-color: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 8px 18px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .order-btn:hover {
+            background-color: var(--gold);
+            color: var(--dark-black);
+        }
+
+        .chefs-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            padding: 0 20px 80px;
+        }
+
+        .chef-card {
+            text-align: center;
+            background-color: var(--card-bg);
+            border: 1px solid rgba(197, 168, 128, 0.1);
+            border-radius: 8px;
+            padding: 40px 30px;
+        }
+
+        .chef-img {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 20px;
+            border: 3px solid var(--gold);
+        }
+
+        .reviews-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            padding: 0 20px 100px;
+        }
+
+        .review-card {
+            background-color: var(--card-bg);
+            border-right: 4px solid var(--gold);
+            padding: 30px;
+            border-radius: 4px;
+        }
+
+        .stars {
+            color: var(--gold);
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .reviewer-name {
+            color: var(--gold);
+            font-weight: bold;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .smart-modal {
+            background-color: #121212;
+            border: 2px solid var(--gold);
+            padding: 35px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 450px;
+            text-align: center;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #888;
+        }
+
+        .info-box {
+            background-color: #1a1a1a;
+            border: 1px solid rgba(197, 168, 128, 0.3);
+            border-radius: 4px;
+            padding: 12px;
+            margin: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .info-tag {
+            font-weight: bold;
+            color: var(--gold);
+        }
+
+        .confirm-btn {
+            background-color: var(--gold);
+            color: var(--dark-black);
+            border: none;
+            padding: 14px;
+            width: 100%;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            border-top: 1px solid rgba(197, 168, 128, 0.1);
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo" id="navLogo">الوردة الذهبية ✨</div>
+        <div class="lang-switcher">
+            <button class="lang-btn active" onclick="changeLanguage('ar')">AR</button>
+            <button class="lang-btn" onclick="changeLanguage('en')">EN</button>
+            <button class="lang-btn" onclick="changeLanguage('fr')">FR</button>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1 id="heroTitle">تذوق الفخامة المطلقة</h1>
+        <p id="heroDesc">نقدم لكم أطباقاً ساحرة تم تحضيرها بعناية وشغف لتناسب ذوقكم الرفيع في أجواء تعبق بالرقي والتميز.</p>
+        <button class="cta-btn" id="openBookingBtn">احجز طاولتك الآن</button>
+    </section>
+
+    <div class="section-header">
+        <h2 class="section-title" id="menuTitle">قائمة المأكولات الفاخرة</h2>
+        <p class="section-desc" id="menuDesc">تذوق تشكيلة مختارة من أرقى الأطباق المحضرة بأجود المكونات الطازجة ومحدثة مباشرة من لوحة التحكم.</p>
+    </div>
+
+    <div class="menu-container" id="dynamicMenu">
+        <!-- يتم توليد الأطباق برمجياً هنا -->
+    </div>
+
+    <div class="section-header">
+        <h2 class="section-title" id="chefsTitle">نخبة طهاتنا المبدعين</h2>
+        <p class="section-desc" id="chefsDesc">يتولى الطبخ والتحضير أشهر شيفات العالم ليضمنوا لكم تجربة ذوقية ساحرة ومثالية.</p>
+    </div>
+    <div class="chefs-container">
+        <div class="chef-card">
+            <img class="chef-img" src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?q=80&w=300" alt="Chef">
+            <h3>Jean-Luc</h3>
+            <p id="chef1Desc">كبير الطهاة الفرنسي الحائز على نجمتي ميشلان لخبرته الطويلة في المطبخ الأوروبي الحديث.</p>
+        </div>
+        <div class="chef-card">
+            <img class="chef-img" src="https://images.unsplash.com/photo-1583394838336-acd977736f90?q=80&w=300" alt="Chef">
+            <h3>Chef Maria</h3>
+            <p id="chef2Desc">أخصائية المعجنات والحلويات الفاخرة، تقدم لوحات فنية مبتكرة بمذاقات ساحرة تسلب الألباب.</p>
+        </div>
+    </div>
+
+    <div class="section-header">
+        <h2 class="section-title" id="reviewsTitle">آراء زوارنا الأوفياء</h2>
+        <p class="section-desc" id="reviewsDesc">فخورون جداً بالتقييمات الاستثنائية التي يشاركها زوار المطعم معنا باستمرار.</p>
+    </div>
+    <div class="reviews-container">
+        <div class="review-card">
+            <div class="stars">⭐⭐⭐⭐⭐</div>
+            <p class="review-text">«لقد كانت تجربة خيالية بكل المقاييس. لحم الستيك يذوب بالفم والخدمة سريعة وراقية جداً.»</p>
+            <div class="reviewer-name">عبد الرحمن العتيبي</div>
+        </div>
+        <div class="review-card">
+            <div class="stars">⭐⭐⭐⭐⭐</div>
+            <p class="review-text">«أجواء كلاسيكية هادئة وفخمة، والنافذة الذكية أذهلتني عندما تعرّفت على لغة هاتفي فوراً!»</p>
+            <div class="reviewer-name">Chantal Dubois</div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="smart-modal">
+            <span class="close-btn" id="closeModalBtn">&times;</span>
+            <h3 id="modalTitle">جاري تحميل النظام الذكي...</h3>
+            <p id="modalMessage">أهلاً بك! نجهز لك أفضل تجربة حجز.</p>
+            <div class="info-box">
+                <span id="labelLang">لغة التصفح الحالية:</span>
+                <span class="info-tag" id="userLanguage">-</span>
+            </div>
+            <div class="info-box">
+                <span id="labelSpeed">سرعة اتصالك الحالية:</span>
+                <span class="info-tag" id="connectionSpeed">جاري القياس...</span>
+            </div>
+            <button class="confirm-btn" id="modalBtn">متابعة عملية الحجز</button>
+        </div>
+    </div>
+
+    <footer>
+        <p id="footerText">© 2026 مطعم الوردة الذهبية الفاخر. جميع الحقوق محفوظة.</p>
+    </footer>
+
+    <script>
+        // الـ Base ID المستخرج بدقة متناهية من رابط صفحتك الحالية
+        const AIRTABLE_PAT = 'patAUDb2AmvjrHMJW.991ef8c88107bc5cfefce401a989e32b0818b'; 
+        const BASE_ID = 'appXL0dvGQViD6OX';
+        const TABLE_NAME = 'Table 1';
+
+        const openBtn = document.getElementById('openBookingBtn');
+        const closeBtn = document.getElementById('closeModalBtn');
+        const overlay = document.getElementById('modalOverlay');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessage = document.getElementById('modalMessage');
+        const userLangElement = document.getElementById('userLanguage');
+        const speedElement = document.getElementById('connectionSpeed');
+
+        const translations = {
+            ar: {
+                logo: "الوردة الذهبية ✨", heroTitle: "تذوق الفخامة المطلقة", heroDesc: "نقدم لكم أطباقاً ساحرة تم تحضيرها بعناية وشغف لتناسب ذوقكم الرفيع.", openBtn: "احجز طاولتك الآن", menuTitle: "قائمة المأكولات الفاخرة", menuDesc: "تذوق تشكيلة مختارة محدثة مباشرة من لوحة التحكم.", chefsTitle: "نخبة طهاتنا المبدعين", chefsDesc: "يتولى الطبخ والتحضير أشهر شيفات العالم.", reviewsTitle: "آراء زوارنا الأوفياء", reviewsDesc: "فخورون جداً بالتقييمات الاستثنائية.", modalTitle: "نافذة الحجز الذكية", modalMessage: "أهلاً بك! يسعدنا خدمتك.", labelLang: "لغة التصفح:", labelSpeed: "سرعة اتصالك:", modalBtn: "متابعة عملية الحجز", footer: "© 2026 مطعم الوردة الذهبية الفاخر. جميع الحقوق محفوظة."
+            },
+            en: {
+                logo: "The Golden Rose ✨", heroTitle: "Savor Absolute Luxury", heroDesc: "We offer you enchanting dishes prepared with care and passion.", openBtn: "Book Your Table Now", menuTitle: "Premium Menu", menuDesc: "Savor a selection of the finest international dishes.", chefsTitle: "Our Elite Chefs", chefsDesc: "Cooking and preparation are handled by world-renowned chefs.", reviewsTitle: "Guest Testimonials", reviewsDesc: "We are immensely proud of our ratings.", modalTitle: "Smart Booking System", modalMessage: "Welcome! We are honored to serve you.", labelLang: "Language:", labelSpeed: "Connection Speed:", modalBtn: "Proceed to Booking", footer: "© 2026 The Golden Rose Luxury Restaurant. All rights reserved."
+            },
+            fr: {
+                logo: "L'Étoile Dorée ✨", heroTitle: "Savourez le Luxe Absolu", heroDesc: "Nous vous proposons des plats enchanteurs préparés avec soin.", openBtn: "Réservez Votre Table", menuTitle: "Carte de Prestige", menuDesc: "Savourez une sélection des meilleurs plats internationaux.", chefsTitle: "Nos Chefs Élite", chefsDesc: "La préparation est assurée par des chefs de renommée mondiale.", reviewsTitle: "Avis de nos Invités", reviewsDesc: "Nous sommes fiers des commentaires exceptionnels.", modalTitle: "Système de Réservation", modalMessage: "Bienvenue! C'est un honneur.", labelLang: "Langue:", labelSpeed: "Vitesse:", modalBtn: "Continuer", footer: "© 2026 L'Étoile Dorée Restaurant de Luxe. Tous droits réservés."
+            }
+        };
+
+        async function fetchMenuFromAirtable() {
+            const url = https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME};
+            const menuContainer = document.getElementById('dynamicMenu');
+            
+            try {
+                const response = await fetch(url, {
+                    headers: { Authorization: Bearer ${AIRTABLE_PAT} }
+                });
+                const data = await response.json();
+                
+                if(data.records && data.records.length > 0) {
+                    renderMenu(data.records);
+                } else {
+                    menuContainer.innerHTML = '<p style="text-align:center; color:var(--gold); grid-column: 1/-1;">برجاء تعبئة بيانات الوجبة (الاسم، السعر، الصورة المرفقة) في Airtable لتظهر هنا.</p>';
+                }
+            } catch (error) {
+                console.error("Error fetching Airtable data:", error);
+                menuContainer.innerHTML = '<p style="text-align:center; color:red; grid-column: 1/-1;">حدث خطأ في الاتصال بالخادم السحابي.</p>';
+            }
+        }
+
+        function renderMenu(records) {
+            const menuContainer = document.getElementById('dynamicMenu');
+            menuContainer.innerHTML = ''; 
+            const currentLang = document.documentElement.getAttribute('lang') || 'ar';
+
+            records.forEach(record => {
+                const fields = record.fields;
+                if(!fields.Name) return; // تخطي السطور الفارغة تماماً لمنع حدوث أي انهيار
+
+                const title = fields.Name;
+                
+                // ذكاء حماية برمجية: إذا لم يرفع العميل صورة بعد، يتم وضع صورة بديلة تلقائياً بدلاً من التوقف والخطأ
+                const imageUrl = fields.Attachment && fields.Attachment[0] ? fields.Attachment[0].url : 'https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=400';
+                
+                // ذكاء حماية برمجية: إذا نسى العميل وضع السعر، تظهر كلمة "حسب الطلب" أو 0 بدلاً من الاختفاء
+                const price = fields.price ? fields.price : '0';
+
+                const orderText = currentLang === 'ar' ? 'اطلب الآن' : (currentLang === 'en' ? 'Order Now' : 'Commander');
+
+                const cardHTML = `
+                    <div class="menu-card">
+                        <img class="menu-img" src="${imageUrl}" alt="${title}">
+                        <div class="menu-info">
+                            <div>
+                                <h3>${title}</h3>
+                            </div>
+                            <div class="price-row">
+                                <span class="price">$${price}</span>
+                                <button class="order-btn" onclick="orderNow()">${orderText}</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                menuContainer.innerHTML += cardHTML;
+            });
+        }
+
+        function changeLanguage(lang) {
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            document.documentElement.setAttribute('lang', lang);
+            document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+
+            document.getElementById('navLogo').textContent = translations[lang].logo;
+            document.getElementById('heroTitle').textContent = translations[lang].heroTitle;
+            document.getElementById('heroDesc').textContent = translations[lang].heroDesc;
+            document.getElementById('openBookingBtn').textContent = translations[lang].openBtn;
+            document.getElementById('menuTitle').textContent = translations[lang].menuTitle;
+            document.getElementById('menuDesc').textContent = translations[lang].menuDesc;
+            document.getElementById('chefsTitle').textContent = translations[lang].chefsTitle;
+            document.getElementById('chefsDesc').textContent = translations[lang].chefsDesc;
+            document.getElementById('chef1Desc').textContent = translations[lang].chef1;
+            document.getElementById('chef2Desc').textContent = translations[lang].chef2;
+            document.getElementById('reviewsTitle').textContent = translations[lang].reviewsTitle;
+            document.getElementById('reviewsDesc').textContent = translations[lang].reviewsDesc;
+            document.getElementById('footerText').textContent = translations[lang].footer;
+            document.getElementById('labelLang').textContent = translations[lang].labelLang;
+            document.getElementById('labelSpeed').textContent = translations[lang].labelSpeed;
+            document.getElementById('modalBtn').textContent = translations[lang].modalBtn;
+
+            fetchMenuFromAirtable();
+        }
+
+        function orderNow() { alert("تم إضافة طلبك بنجاح! ✨"); }
+        openBtn.addEventListener('click', () => { overlay.classList.add('active'); runSmartFeatures(); });
+        closeBtn.addEventListener('click', () => { overlay.classList.remove('active'); });
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('active'); });
+
+        function runSmartFeatures() {
+            const currentLang = document.documentElement.getAttribute('lang') || 'ar';
+            userLangElement.textContent = (navigator.language || navigator.userLanguage).toUpperCase();
+            modalTitle.textContent = translations[currentLang].modalTitle;
+            modalMessage.textContent = translations[currentLang].modalMessage;
+
+            if (navigator.connection && navigator.connection.downlink) {
+                speedElement.textContent = ${navigator.connection.downlink} Mbps ⚡;
+            } else {
+                speedElement.textContent = "Excellent 🟢";
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchMenuFromAirtable);
+    </script>
+</body>
+</html>
