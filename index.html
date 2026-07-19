@@ -142,80 +142,11 @@
             font-size: 16px;
         }
 
-        .menu-container {
+        /* تنسيق حاوية الجدول الفاخرة */
+        .airtable-container {
             max-width: 1200px;
             margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
             padding: 0 20px 80px;
-        }
-
-        .menu-card {
-            background-color: var(--card-bg);
-            border: 1px solid rgba(197, 168, 128, 0.1);
-            border-radius: 8px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        .menu-card:hover {
-            transform: translateY(-8px);
-            border-color: var(--gold);
-            box-shadow: 0 10px 20px rgba(197, 168, 128, 0.1);
-        }
-
-        .menu-img {
-            height: 220px;
-            width: 100%;
-            object-fit: cover;
-            background-color: #222;
-        }
-
-        .menu-info {
-            padding: 25px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .menu-info h3 {
-            color: var(--gold);
-            font-size: 20px;
-            margin-bottom: 10px;
-        }
-
-        .price-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            padding-top: 15px;
-            margin-top: 15px;
-        }
-
-        .price {
-            font-size: 22px;
-            color: var(--gold);
-            font-weight: bold;
-        }
-
-        .order-btn {
-            background-color: transparent;
-            border: 1px solid var(--gold);
-            color: var(--gold);
-            padding: 8px 18px;
-            cursor: pointer;
-            border-radius: 4px;
-            font-weight: bold;
-        }
-
-        .order-btn:hover {
-            background-color: var(--gold);
-            color: var(--dark-black);
         }
 
         .chefs-container {
@@ -367,8 +298,9 @@
         <p class="section-desc" id="menuDesc">تذوق تشكيلة مختارة من أرقى الأطباق المحضرة بأجود المكونات الطازجة ومحدثة مباشرة من لوحة التحكم.</p>
     </div>
 
-    <div class="menu-container" id="dynamicMenu">
-        <!-- يتم توليد الأطباق هنا بنجاح -->
+    <!-- تـم التعديل هنا: دمج جدول التضمين التلقائي والمباشر لمنع ظهور القسم فارغاً -->
+    <div class="airtable-container">
+        <iframe class="airtable-embed" src="https://airtable.com/embed/appXL0dvGQViD6OX/shrFOtI0AjbEuscE0" frameborder="0" onmousewheel="" width="100%" height="560" style="background: transparent; border: 2px solid var(--gold); border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);"></iframe>
     </div>
 
     <div class="section-header">
@@ -427,17 +359,6 @@
     </footer>
 
     <script>
-        const AIRTABLE_PAT = 'patAUDb2AmvjrHMJW.991ef8c88107bc5cfefce401a989e32b0818b'; 
-        const BASE_ID = 'appXL0dvGQViD6OX';
-        const TABLE_NAME = 'Table 1';
-
-        // بيانات احتياطية ذكية ومطابقة تماماً لجدولكِ تظهر فوراً في حال وجود حظر اتصال من المتصفح
-        const fallbackMenu = [
-            { fields: { Name: "برجر فاخر", price: 60, Attachment: [{ url: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=500" }] } },
-            { fields: { Name: "جمبري ملكي", price: 70, Attachment: [{ url: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?q=80&w=500" }] } },
-            { fields: { Name: "سلطة مشكلة", price: 120, Attachment: [{ url: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=500" }] } }
-        ];
-
         const openBtn = document.getElementById('openBookingBtn');
         const closeBtn = document.getElementById('closeModalBtn');
         const overlay = document.getElementById('modalOverlay');
@@ -454,65 +375,9 @@
                 logo: "The Golden Rose ✨", heroTitle: "Savor Absolute Luxury", heroDesc: "We offer you enchanting dishes prepared with care and passion to suit your fine taste.", openBtn: "Book Your Table Now", menuTitle: "Premium Menu", menuDesc: "Savor a selection of the finest dishes prepared with fresh ingredients, updated live.", chefsTitle: "Our Elite Chefs", chefsDesc: "Cooking and preparation are handled by world-renowned chefs to guarantee a magical experience.", chef1: "Two-Michelin-starred French Head Chef, renowned for his long expertise in modern European cuisine.", chef2: "Luxury Pastry Specialist, creating innovative edible masterpieces with enchanting flavors.", reviewsTitle: "Guest Testimonials", reviewsDesc: "We are immensely proud of the exceptional ratings shared by our distinguished guests.", modalTitle: "Smart Booking System", modalMessage: "Welcome! We are honored to serve you and prepare your table.", labelLang: "Current Language:", labelSpeed: "Connection Speed:", modalBtn: "Proceed to Booking", footer: "© 2026 The Golden Rose Luxury Restaurant. All rights reserved."
             },
             fr: {
-                logo: "L'Étoile Dorée ✨", heroTitle: "Savourez le Luxe Absolu", heroDesc: "Nous vous proposons des plats enchanteurs préparés avec soin pour satisfaire votre goût raffiné.", openBtn: "Réservez Votre Table", menuTitle: "Carte de Prestige", menuDesc: "Savourez une sélection des meilleurs plats, mis à jour en direct depuis le panneau.", chefsTitle: "Nos Chefs Élite", chefsDesc: "La préparation est assurée par des chefs de renommée mondiale pour une expérience parfaite.", chef1: "Chef de cuisine français doublement étoilé au guide Michelin, expert en cuisine européenne moderne.", chef2: "Spécialiste des pâtisseries de luxe, créant des chefs-d'œuvre innovants aux saveurs enchanteresses.", reviewsTitle: "Avis de nos Invités", reviewsDesc: "Nous sommes fiers des commentaires exceptionnels partagés par nuestros invités.", modalTitle: "Système de Réservation", modalMessage: "Bienvenue! C'est un honneur de vous servir et de préparer votre table.", labelLang: "Langue Actuelle:", labelSpeed: "Vitesse Connexion:", modalBtn: "Continuer la Réservation", footer: "© 2026 L'Étoile Dorée Restaurant de Luxe. Tous droits réservés."
+                logo: "L'Étoile Dorée ✨", heroTitle: "Savourez le Luxe Absolu", heroDesc: "Nous vous proposons des plats enchanteurs préparés avec soin pour satisfaire votre goût raffiné.", openBtn: "Réservez Votre Table", menuTitle: "Carte de Prestige", menuDesc: "Savourez une sélection des meilleurs plats, mis à jour en direct depuis le panneau.", chefsTitle: "Nos Chefs Élite", chefsDesc: "La préparation est assurée by des chefs de renommée mondiale pour une expérience parfaite.", chef1: "Chef de cuisine français doublement étoilé au guide Michelin, expert en cuisine européenne moderne.", chef2: "Spécialiste des pâtisseries de luxe, créant des chefs-d'œuvre innovants aux saveurs enchanteresses.", reviewsTitle: "Avis de nos Invités", reviewsDesc: "Nous sommes fiers des commentaires exceptionnels partagés par nuestros invités.", modalTitle: "Système de Réservation", modalMessage: "Bienvenue! C'est un honneur de vous servir et de préparer votre table.", labelLang: "Langue Actuelle:", labelSpeed: "Vitesse Connexion:", modalBtn: "Continuer la Réservation", footer: "© 2026 L'Étoile Dorée Restaurant de Luxe. Tous droits réservés."
             }
         };
-
-        async function fetchMenuFromAirtable() {
-            const url = https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(TABLE_NAME)};
-            
-            try {
-                const response = await fetch(url, {
-                    headers: { Authorization: Bearer ${AIRTABLE_PAT} }
-                });
-                
-                if (!response.ok) {
-                    throw new Error("CORS or API restriction");
-                }
-
-                const data = await response.json();
-                if(data.records && data.records.length > 0) {
-                    renderMenu(data.records);
-                } else {
-                    renderMenu(fallbackMenu);
-                }
-            } catch (error) {
-                console.log("Using secure fallback layout due to browser block.");
-                renderMenu(fallbackMenu); // تشغيل النظام الاحتياطي فوراً لحماية مظهر الصفحة
-            }
-        }
-
-        function renderMenu(records) {
-            const menuContainer = document.getElementById('dynamicMenu');
-            menuContainer.innerHTML = ''; 
-            const currentLang = document.documentElement.getAttribute('lang') || 'ar';
-
-            records.forEach(record => {
-                const fields = record.fields;
-                if(!fields.Name) return; 
-
-                const title = fields.Name;
-                const imageUrl = fields.Attachment && fields.Attachment[0] ? fields.Attachment[0].url : 'https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=400';
-                const price = fields.price ? fields.price : '0';
-                const orderText = currentLang === 'ar' ? 'اطلب الآن' : (currentLang === 'en' ? 'Order Now' : 'Commander');
-
-                const cardHTML = `
-                    <div class="menu-card">
-                        <img class="menu-img" src="${imageUrl}" alt="${title}">
-                        <div class="menu-info">
-                            <div>
-                                <h3>${title}</h3>
-                            </div>
-                            <div class="price-row">
-                                <span class="price">${price} DH</span>
-                                <button class="order-btn" onclick="orderNow()">${orderText}</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                menuContainer.innerHTML += cardHTML;
-            });
-        }
 
         function changeLanguage(lang) {
             document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
@@ -536,11 +401,8 @@
             document.getElementById('labelLang').textContent = translations[lang].labelLang;
             document.getElementById('labelSpeed').textContent = translations[lang].labelSpeed;
             document.getElementById('modalBtn').textContent = translations[lang].modalBtn;
-
-            fetchMenuFromAirtable();
         }
 
-        function orderNow() { alert("تم إضافة طلبك بنجاح! ✨"); }
         openBtn.addEventListener('click', () => { overlay.classList.add('active'); runSmartFeatures(); });
         closeBtn.addEventListener('click', () => { overlay.classList.remove('active'); });
         overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('active'); });
@@ -557,8 +419,6 @@
                 speedElement.textContent = "Excellent 🟢";
             }
         }
-
-        document.addEventListener('DOMContentLoaded', fetchMenuFromAirtable);
     </script>
 </body>
 </html>
