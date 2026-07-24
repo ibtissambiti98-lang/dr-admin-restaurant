@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مطعم الوردة الذهبية الفاخر | L'Étoile Dorée</title>
+    <style>
+        :root {
+            --gold: #c5a880;
+            --gold-hover: #e2d1b9;
+            --dark-black: #0a0a0a;
+            --card-bg: #121212;
+            --text-gray: #b0b0b0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--dark-black);
+            color: #ffffff;
+            line-height: 1.6;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 8%;
+            background-color: rgba(10, 10, 10, 0.95);
+            border-bottom: 1px solid rgba(197, 168, 128, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .admin-toggle-btn {
+            background-color: rgba(197, 168, 128, 0.1);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .admin-toggle-btn:hover {
+            background-color: var(--gold);
+            color: var(--dark-black);
+        }
+
+        .lang-switcher {
+            display: flex;
+            gap: 10px;
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: #fff;
+            padding: 6px 14px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .lang-btn:hover, .lang-btn.active {
+            background-color: var(--gold);
+            color: var(--dark-black);
+        }
+
+        .hero {
+            position: relative;
+            min-height: 75vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.7)), 
+                        url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1920') no-repeat center center/cover;
+            padding: 80px 20px;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            color: var(--gold);
+            margin-bottom: 20px;
+            font-weight: 800;
+        }
+
+        .hero p {
+            font-size: 18px;
+            max-width: 700px;
+            color: #e0e0e0;
+            margin-bottom: 35px;
+        }
+
+        .cta-btn {
+            background-color: var(--gold);
+            color: var(--dark-black);
+            border: none;
+            padding: 16px 45px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .section-header {
+            text-align: center;
+            padding: 80px 20px 40px;
+        }
+
+        .section-title {
+            color: var(--gold);
+            font-size: 36px;
+        }
+
+        .menu-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: center;
+            gap: 30px;
+            padding: 0 20px 80px;
+            flex-wrap: wrap;
+        }
+
+        .menu-card {
+            background-color: var(--card-bg);
+            border: 1px solid rgba(197, 168, 128, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            width: 320px;
+        }
+
+        .menu-img-wrapper {
+            position: relative;
+            height: 240px;
+            width: 100%;
+        }
+
+        .menu-img {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            background-color: #222;
+        }
+
+        .menu-info {
+            padding: 25px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .menu-info h3 {
+            color: var(--gold);
+            font-size: 22px;
+            margin-bottom: 15px;
+            text-align: right;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+
+        .price {
+            font-size: 22px;
+            color: var(--gold);
+            font-weight: bold;
+        }
+
+        .order-btn {
+            background-color: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 8px 22px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        /* قسم فريق العمل */
+        .team-section {
+            background-color: #0e0e0e;
+            padding: 80px 20px;
+            border-top: 1px solid rgba(197, 168, 128, 0.1);
+        }
+
+        .team-grid {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .team-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(197, 168, 128, 0.1);
+            border-radius: 8px;
+            width: 280px;
+            text-align: center;
+            padding: 25px;
+        }
+
+        .team-card img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+            border: 2px solid var(--gold);
+        }
+
+        .team-card h4 {
+            color: var(--gold);
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .team-card p {
+            color: var(--text-gray);
+            font-size: 14px;
+        }
+
+        /* قسم آراء الزوار */
+        .testimonials-section {
+            padding: 80px 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .testimonials-grid {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .testimonial-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(197, 168, 128, 0.1);
+            padding: 30px;
+            border-radius: 8px;
+            width: 300px;
+            text-align: right;
+        }
+
+        .testimonial-card p {
+            color: #ddd;
+            font-style: italic;
+            margin-bottom: 15px;
+            font-size: 15px;
+        }
+
+        .testimonial-card h5 {
+            color: var(--gold);
+            font-size: 16px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            border-top: 1px solid rgba(197, 168, 128, 0.1);
+            color: #666;
+        }
+    </style>
+
+    <!-- استدعاء مكتبة Supabase للربط المباشر -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <header>
+        <div class="logo" id="navLogo">الوردة الذهبية ✨</div>
+        <div class="header-actions">
+            <div class="lang-switcher">
+                <button class="lang-btn active" onclick="changeLanguage('ar', event)">AR</button>
+                <button class="lang-btn" onclick="changeLanguage('en', event)">EN</button>
+                <button class="lang-btn" onclick="changeLanguage('fr', event)">FR</button>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1 id="heroTitle">تذوق الفخامة المطلقة</h1>
+        <p id="heroDesc">نقدم لكم أطباقاً ساحرة تم تحضيرها بعناية وشغف لتناسب ذوقكم الرفيع.</p>
+        <button class="cta-btn" id="openBookingBtn">احجز طاولتك الآن</button>
+    </section>
+
+    <!-- قسم قائمة المأكولات (مرتبط بـ Supabase) -->
+    <div class="section-header">
+        <h2 class="section-title" id="menuTitle">قائمة المأكولات الفاخرة</h2>
+    </div>
+
+    <div class="menu-container" id="dynamicMenu">
+        <!-- سيتم جلب العناصر وعرضها هنا تلقائياً من القاعدة -->
+    </div>
+
+    <!-- قسم فريق العمل -->
+    <div class="section-header">
+        <h2 class="section-title">فريق العمل المميز</h2>
+    </div>
+    <section class="team-section">
+        <div class="team-grid">
+            <div class="team-card">
+                <img src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?q=80&w=400" alt="الشيف">
+                <h4>الشيف ريان</h4>
+                <p>رئيس الطهاة بخبرة عالمية في الأطباق الراقية</p>
+            </div>
+            <div class="team-card">
+                <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?q=80&w=400" alt="مسؤول الخدمة">
+                <h4>محمد أمين</h4>
+                <p>مسؤول خدمة الزبائن والضيافة الفاخرة</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم آراء الزوار -->
+    <section class="testimonials-section">
+        <h2 class="section-title">آراء الزوار الكرام</h2>
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <p>"تجربة مذهلة حقاً، الأطباق لذيذة للغاية والخدمة ممتازة ومحترفة."</p>
+                <h5>يوسف المنصوري</h5>
+            </div>
+            <div class="testimonial-card">
+                <p>"المطعم هادئ والأكل فاخر جداً، أنصح الجميع بتجربة رولو ميام والبرغر."</p>
+                <h5>سناء الإدريسي</h5>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2026 مطعم الوردة الذهبية الفاخر. جميع الحقوق محفوظة.</p>
+    </footer>
+
+    <script>
+        // إعدادات الاتصال بـ Supabase باستخدام بيانات مشروعك
+        const SUPABASE_URL = 'https://vwcpxsabhtojubraiajp.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_cnRZjVTJIbTkngCM97VuLA_3R-rf3Y6';
+        
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // دالة لجلب وعرض القائمة من جدول menu_items في Supabase
+        async function renderMenu(lang = 'ar') {
+            const menuContainer = document.getElementById('dynamicMenu');
+            menuContainer.innerHTML = '<p style="color: var(--gold); text-align: center; width: 100%;">جاري تحميل قائمة الطعام...</p>';
+            
+            const { data: menuItems, error } = await supabaseClient
+                .from('menu_items')
+                .select('*');
+
+            if (error) {
+                menuContainer.innerHTML = '<p style="color: red; text-align: center; width: 100%;">حدث خطأ أثناء جلب البيانات.</p>';
+                console.error('Error fetching menu:', error);
+                return;
+            }
+
+            menuContainer.innerHTML = '';
+
+            if (!menuItems || menuItems.length === 0) {
+                menuContainer.innerHTML = '<p style="color: #888; text-align: center; width: 100%;">لا توجد أطباق مضافة حالياً.</p>';
+                return;
+            }
+
+            menuItems.forEach((item) => {
+                let btnText = lang === 'en' ? 'Order Now' : (lang === 'fr' ? 'Commander' : 'اطلب الآن');
+
+                const card = document.createElement('div');
+                card.className = 'menu-card';
+                card.innerHTML = `
+                    <div class="menu-img-wrapper">
+                        <img class="menu-img" src="${item.img || ''}" alt="${item.name || ''}">
+                    </div>
+                    <div class="menu-info">
+                        <h3>${item.name || ''}</h3>
+                        <div class="price-row">
+                            <span class="price">${item.price || ''} DH</span>
+                            <button class="order-btn" onclick="alert('تم طلب الطبق بنجاح!')">${btnText}</button>
+                        </div>
+                    </div>
+                `;
+                menuContainer.appendChild(card);
+            });
+        }
+
+        function changeLanguage(lang, evt) {
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            if (evt && evt.target) evt.target.classList.add('active');
+            renderMenu(lang);
+        }
+
+        // تشغيل جلب البيانات عند تحميل الصفحة
+        window.addEventListener('DOMContentLoaded', () => {
+            renderMenu('ar');
+        });
+    </script>
+</body>
+</html>
