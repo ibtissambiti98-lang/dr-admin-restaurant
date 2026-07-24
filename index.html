@@ -51,16 +51,17 @@
             display: flex;
             gap: 15px;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .admin-toggle-btn {
-            background-color: transparent;
-            border: 1px dashed var(--gold);
+            background-color: rgba(197, 168, 128, 0.1);
+            border: 1px solid var(--gold);
             color: var(--gold);
-            padding: 6px 12px;
+            padding: 8px 16px;
             cursor: pointer;
             border-radius: 4px;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: bold;
         }
 
@@ -212,13 +213,12 @@
             font-weight: bold;
         }
 
-        /* تنسيق لوحة الإدارة المخفية التي تظهر عند النقر */
         .admin-edit-box {
             background: #1a1a1a;
             border-top: 1px dashed var(--gold);
             padding: 15px;
             margin-top: 15px;
-            display: none; /* مخفية افتراضياً */
+            display: none;
         }
 
         .admin-edit-box.active {
@@ -285,7 +285,6 @@
     </footer>
 
     <script>
-        // البيانات الأساسية (مطابقة لصورك: برغر، سابا، رولو ميام)
         let defaultMenuItems = [
             { 
                 name: "برغر", 
@@ -304,12 +303,11 @@
             }
         ];
 
-        // جلب البيانات المخزنة أو البدء بالافتراضية
         let menuItems = JSON.parse(localStorage.getItem('restaurantMenu')) || defaultMenuItems;
         let isAdminMode = false;
 
         function renderMenu(lang) {
-            menuContainer = document.getElementById('dynamicMenu');
+            const menuContainer = document.getElementById('dynamicMenu');
             menuContainer.innerHTML = '';
             
             menuItems.forEach((item, index) => {
@@ -328,7 +326,6 @@
                             <button class="order-btn" onclick="alert('تم طلب الطبق بنجاح!')">${btnText}</button>
                         </div>
                         
-                        <!-- لوحة التعديل الخاصة بالعامل (تظهر فقط عند تفعيل الإدارة) -->
                         <div class="admin-edit-box ${isAdminMode ? 'active' : ''}" id="edit-box-${index}">
                             <input type="text" id="name-${index}" value="${item.name}" placeholder="اسم الطبق">
                             <input type="text" id="price-${index}" value="${item.price}" placeholder="الثمن">
@@ -341,13 +338,11 @@
             });
         }
 
-        // تفعيل أو إلغاء وضع الإدارة
         function toggleAdminMode() {
             isAdminMode = !isAdminMode;
             renderMenu('ar');
         }
 
-        // حفظ التعديلات التي يقوم بها العامل
         function saveItem(index) {
             const newName = document.getElementById(`name-${index}`).value;
             const newPrice = document.getElementById(`price-${index}`).value;
@@ -357,7 +352,6 @@
             menuItems[index].price = newPrice;
             menuItems[index].img = newImg;
 
-            // حفظ التغيير في ذاكرة المتصفح ليبقى حتى بعد إغلاق الصفحة
             localStorage.setItem('restaurantMenu', JSON.stringify(menuItems));
             
             alert("تم حفظ التعديلات بنجاح! ✨");
