@@ -22,7 +22,7 @@
     <div id="loginDiv" class="box">
         <h2 style="color: #c5a880;">تسجيل دخول الإدارة</h2>
         <input type="password" id="pInput" placeholder="أدخل كلمة المرور (اكتب 123)">
-        <button onclick="login()">دخول</button>
+        <button onclick="if(document.getElementById('pInput').value==='123'){document.getElementById('loginDiv').style.display='none';document.getElementById('adminDiv').style.display='block';loadItems();}else{alert('كلمة المرور خطأ');}">دخول</button>
     </div>
 
     <!-- لوحة التحكم (مخفية حتى يتم الدخول) -->
