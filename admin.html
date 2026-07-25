@@ -3,68 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة إدارة مطعم الوردة الذهبية</title>
+    <title>لوحة إدارة المطعم</title>
     <style>
-        :root {
-            --gold: #c5a880;
-            --dark-black: #0a0a0a;
-            --card-bg: #121212;
-            --danger: #e74c3c;
-            --success: #2ecc71;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: var(--dark-black); color: #fff; padding: 30px 8%; }
-        h1, h2 { color: var(--gold); margin-bottom: 20px; text-align: center; }
-        #loginSection { max-width: 400px; margin: 100px auto; background: var(--card-bg); padding: 40px; border-radius: 8px; border: 1px solid rgba(197, 168, 128, 0.2); text-align: center; }
-        input { width: 100%; padding: 12px; margin: 10px 0; background: #1a1a1a; border: 1px solid var(--gold); color: white; border-radius: 4px; font-size: 16px; }
-        button { background-color: var(--gold); color: var(--dark-black); border: none; padding: 12px 25px; font-size: 16px; font-weight: bold; border-radius: 4px; cursor: pointer; margin-top: 10px; width: 100%; }
-        button:hover { opacity: 0.9; }
-        .btn-delete { background-color: var(--danger); color: white; padding: 6px 15px; width: auto; font-size: 14px; }
-        .btn-edit { background-color: #3498db; color: white; padding: 6px 15px; width: auto; font-size: 14px; margin-left: 5px; }
-        #dashboardSection { display: none; }
-        .admin-form { background: var(--card-bg); padding: 25px; border-radius: 8px; border: 1px solid rgba(197, 168, 128, 0.2); margin-bottom: 40px; max-width: 600px; margin-left: auto; margin-right: auto; }
-        table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 8px; overflow: hidden; }
-        th, td { padding: 15px; text-align: right; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
-        th { background-color: #1a1a1a; color: var(--gold); }
-        img.thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; }
+        body { background-color: #0a0a0a; color: #fff; font-family: Tahoma, sans-serif; padding: 20px; text-align: center; }
+        .box { max-width: 500px; margin: 50px auto; background: #121212; padding: 30px; border-radius: 8px; border: 1px solid #c5a880; }
+        input, button { width: 100%; padding: 12px; margin: 10px 0; font-size: 16px; border-radius: 4px; border: 1px solid #c5a880; background: #1a1a1a; color: white; }
+        button { background: #c5a880; color: #000; font-weight: bold; cursor: pointer; }
+        table { width: 100%; margin-top: 20px; border-collapse: collapse; background: #121212; }
+        th, td { padding: 10px; border: 1px solid #333; text-align: right; }
+        th { color: #c5a880; }
+        img { width: 50px; height: 50px; object-fit: cover; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-    <div id="loginSection">
-        <h1>إدارة قائمة الطعام ✨</h1>
-        <p style="color: #aaa; margin-bottom: 20px;">أدخل كلمة المرور الخاصة بالإدارة</p>
-        <input type="password" id="passInput" placeholder="كلمة المرور">
-        <button onclick="checkPassword()">دخول</button>
-        <p id="loginError" style="color: var(--danger); margin-top: 10px; display: none;">كلمة المرور غير صحيحة!</p>
+    <!-- شاشة تسجيل الدخول المبسطة -->
+    <div id="loginDiv" class="box">
+        <h2 style="color: #c5a880;">تسجيل دخول الإدارة</h2>
+        <input type="password" id="pInput" placeholder="أدخل كلمة المرور (اكتب 123)">
+        <button onclick="login()">دخول</button>
     </div>
 
-    <div id="dashboardSection">
-        <h1>لوحة تحكم مطعم الوردة الذهبية</h1>
-        
-        <div class="admin-form">
-            <h2 id="formTitle">إضافة طبق جديد</h2>
-            <input type="hidden" id="itemId">
-            <input type="text" id="itemName" placeholder="اسم الطبق (مثال: شاورما دجاج)">
-            <input type="number" id="itemPrice" placeholder="السعر بالدرهم (مثال: 50)">
-            <input type="text" id="itemImg" placeholder="رابط صورة الطبق (URL)">
-            <button id="saveBtn" onclick="saveItem()">إضافة الطبق</button>
-            <button id="cancelBtn" onclick="resetForm()" style="background: #555; display: none; margin-top: 5px;">إلغاء التعديل</button>
+    <!-- لوحة التحكم (مخفية حتى يتم الدخول) -->
+    <div id="adminDiv" style="display: none;">
+        <h1 style="color: #c5a880;">لوحة تحكم الأطباق</h1>
+        <div class="box">
+            <h3>إضافة طبق جديد</h3>
+            <input type="text" id="nameInput" placeholder="اسم الطبق">
+            <input type="number" id="priceInput" placeholder="السعر بالدرهم">
+            <input type="text" id="imgInput" placeholder="رابط الصورة (URL)">
+            <button onclick="addItem()">إضافة الطبق للقائمة</button>
         </div>
 
-        <h2>الأطباق المعروضة حالياً</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>الصورة</th>
-                    <th>اسم الطبق</th>
-                    <th>السعر (DH)</th>
-                    <th>الإجراءات</th>
-                </tr>
-            </thead>
-            <tbody id="adminMenuTable"></tbody>
-        </table>
+        <div style="max-width: 800px; margin: 0 auto;">
+            <h3>الأطباق الحالية</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>الصورة</th>
+                        <th>الاسم</th>
+                        <th>السعر</th>
+                        <th>حذف</th>
+                    </tr>
+                </thead>
+                <tbody id="menuTable"></tbody>
+            </table>
+        </div>
     </div>
 
     <script>
@@ -72,81 +57,59 @@
         const SUPABASE_KEY = 'sb_publishable_cnRZjVTJIbTkngCM97VuLA_3R-rf3Y6';
         const { createClient } = window.supabase;
         const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-        const ADMIN_PASSWORD = "123"; 
 
-        function checkPassword() {
-            const pwd = document.getElementById('passInput').value;
-            if (pwd === ADMIN_PASSWORD) {
-                document.getElementById('loginSection').style.display = 'none';
-                document.getElementById('dashboardSection').style.display = 'block';
-                loadAdminMenu();
+        function login() {
+            const val = document.getElementById('pInput').value;
+            if (val === '123') {
+                document.getElementById('loginDiv').style.display = 'none';
+                document.getElementById('adminDiv').style.display = 'block';
+                loadItems();
             } else {
-                document.getElementById('loginError').style.display = 'block';
+                alert('كلمة المرور خطأ! استخدم 123');
             }
         }
 
-        async function loadAdminMenu() {
-            const tableBody = document.getElementById('adminMenuTable');
-            tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;">جاري التحميل...</td></tr>';
+        async function loadItems() {
+            const tbody = document.getElementById('menuTable');
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">جاري التحميل...</td></tr>';
             const { data, error } = await supabase.from('menu').select('*');
-            if (error) { alert('خطأ: ' + error.message); return; }
-            tableBody.innerHTML = '';
+            if (error) { alert('خطأ في التحميل'); return; }
+            tbody.innerHTML = '';
             data.forEach(item => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><img src="${item.img || ''}" class="thumb"></td>
-                    <td><strong>${item.name || ''}</strong></td>
-                    <td>${item.price || 0} DH</td>
-                    <td>
-                        <button class="btn-edit" onclick="editItem(${item.id}, '${item.name}', ${item.price}, '${item.img}')">تعديل</button>
-                        <button class="btn-delete" onclick="deleteItem(${item.id})">حذف</button>
-                    </td>
+                tbody.innerHTML += `
+                    <tr>
+                        <td><img src="${item.img || ''}"></td>
+                        <td>${item.name || ''}</td>
+                        <td>${item.price || 0} DH</td>
+                        <td><button style="background:#e74c3c; color:white; padding:5px;" onclick="delItem(${item.id})">حذف</button></td>
+                    </tr>
                 `;
-                tableBody.appendChild(tr);
             });
         }
 
-        async function saveItem() {
-            const id = document.getElementById('itemId').value;
-            const name = document.getElementById('itemName').value;
-            const price = document.getElementById('itemPrice').value;
-            const img = document.getElementById('itemImg').value;
-            if (!name || !price) { alert('يرجى ملء الاسم والسعر!'); return; }
-            if (id) {
-                await supabase.from('menu').update({ name, price, img }).eq('id', id);
+        async function addItem() {
+            const name = document.getElementById('nameInput').value;
+            const price = document.getElementById('priceInput').value;
+            const img = document.getElementById('imgInput').value;
+            if (!name || !price) { alert('الرجاء إدخال الاسم والسعر'); return; }
+            
+            const { error } = await supabase.from('menu').insert([{ name, price, img }]);
+            if (error) {
+                alert('حدث خطأ أثناء الإضافة: ' + error.message);
             } else {
-                await supabase.from('menu').insert([{ name, price, img }]);
+                alert('تم إضافة الطبق بنجاح!');
+                document.getElementById('nameInput').value = '';
+                document.getElementById('priceInput').value = '';
+                document.getElementById('imgInput').value = '';
+                loadItems();
             }
-            resetForm();
-            loadAdminMenu();
-            alert('تمت العملية بنجاح!');
         }
 
-        function editItem(id, name, price, img) {
-            document.getElementById('itemId').value = id;
-            document.getElementById('itemName').value = name;
-            document.getElementById('itemPrice').value = price;
-            document.getElementById('itemImg').value = img;
-            document.getElementById('formTitle').innerText = 'تعديل الطبق';
-            document.getElementById('saveBtn').innerText = 'حفظ التعديلات';
-            document.getElementById('cancelBtn').style.display = 'block';
-        }
-
-        async function deleteItem(id) {
+        async function delItem(id) {
             if (confirm('هل أنت متأكد من الحذف؟')) {
                 await supabase.from('menu').delete().eq('id', id);
-                loadAdminMenu();
+                loadItems();
             }
-        }
-
-        function resetForm() {
-            document.getElementById('itemId').value = '';
-            document.getElementById('itemName').value = '';
-            document.getElementById('itemPrice').value = '';
-            document.getElementById('itemImg').value = '';
-            document.getElementById('formTitle').innerText = 'إضافة طبق جديد';
-            document.getElementById('saveBtn').innerText = 'إضافة الطبق';
-            document.getElementById('cancelBtn').style.display = 'none';
         }
     </script>
 </body>
