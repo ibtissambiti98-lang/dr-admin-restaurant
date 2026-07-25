@@ -385,7 +385,7 @@
             menuContainer.innerHTML = '<p style="color: var(--gold); text-align: center; width: 100%;">جاري تحميل قائمة الطعام...</p>';
             
             const { data: menuItems, error } = await supabaseClient
-                .from('menu_items')
+                .from('menu')
                 .select('*');
 
             if (error) {
