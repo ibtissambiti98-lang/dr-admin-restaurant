@@ -3,40 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة إدارة الأطباق</title>
+    <title>لوحة إدارة الأطباق الشاملة</title>
     <style>
         body { background-color: #0a0a0a; color: #fff; font-family: Tahoma, sans-serif; padding: 20px; text-align: center; }
-        .box { max-width: 500px; margin: 20px auto; background: #121212; padding: 20px; border-radius: 8px; border: 1px solid #c5a880; }
-        input, button { width: 100%; padding: 12px; margin: 10px 0; font-size: 16px; border-radius: 4px; border: 1px solid #c5a880; background: #1a1a1a; color: white; }
-        button { background: #c5a880; color: #000; font-weight: bold; cursor: pointer; }
+        .box { max-width: 600px; margin: 20px auto; background: #121212; padding: 20px; border-radius: 8px; border: 1px solid #c5a880; text-align: right; }
+        input, select, button { width: 100%; padding: 12px; margin: 8px 0; font-size: 16px; border-radius: 4px; border: 1px solid #333; background: #1a1a1a; color: white; box-sizing: border-box; }
+        button { background: #c5a880; color: #000; font-weight: bold; cursor: pointer; border: none; }
+        button:hover { background: #d4b890; }
         table { width: 100%; margin-top: 20px; border-collapse: collapse; background: #121212; }
-        th, td { padding: 10px; border: 1px solid #333; text-align: right; }
+        th, td { padding: 12px; border: 1px solid #333; text-align: center; }
         th { color: #c5a880; }
-        img { width: 50px; height: 50px; object-fit: cover; }
+        img { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; }
+        .actions button { padding: 6px 10px; margin: 2px; font-size: 14px; width: auto; }
+        .edit-btn { background: #3498db; color: white; }
+        .del-btn { background: #e74c3c; color: white; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-    <h1 style="color: #c5a880;">لوحة تحكم الأطباق</h1>
+    <h1 style="color: #c5a880;">لوحة تحكم مطعم Golden Rose</h1>
     
     <div class="box">
-        <h3>إضافة طبق جديد</h3>
-        <input type="text" id="nameInput" placeholder="اسم الطبق">
-        <input type="number" id="priceInput" placeholder="السعر بالدرهم">
-        <input type="text" id="imgInput" placeholder="رابط الصورة (URL)">
-        <button onclick="addItem()">إضافة الطبق للقائمة</button>
+        <h3 id="formTitle" style="color: #c5a880; margin-top:0;">إضافة طبق جديد</h3>
+        <input type="hidden" id="editId">
+        <label>اسم الطبق:</label>
+        <input type="text" id="nameInput" placeholder="مثال: طاجين اللحم بالبرقوق">
+        
+        <label>السعر (درهم):</label>
+        <input type="number" id="priceInput" placeholder="مثال: 85">
+        
+        <label>صورة الطبق (اختر من هاتفك أو حاسوبك):</label>
+        <input type="file" id="imageFile" accept="image/*">
+
+        <button onclick="saveItem()" id="saveBtn">إضافة الطبق للقائمة</button>
+        <button onclick="resetForm()" id="cancelBtn" style="background: #555; display:none;">إلغاء التعديل</button>
     </div>
 
-    <div style="max-width: 800px; margin: 0 auto;">
-        <h3>الأطباق الحالية في القائمة</h3>
+    <div style="max-width: 900px; margin: 0 auto;">
+        <h3>جميع الأطباق الحالية</h3>
         <table>
             <thead>
                 <tr>
                     <th>الصورة</th>
                     <th>الاسم</th>
                     <th>السعر</th>
-                    <th>حذف</th>
+                    <th>التحكم</th>
                 </tr>
             </thead>
             <tbody id="menuTable"></tbody>
@@ -49,51 +61,151 @@
         const { createClient } = window.supabase;
         const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // تحميل الأطباق فور فتح الصفحة مباشرة
+        // تحميل الأطباق فور فتح الصفحة
         async function loadItems() {
             const tbody = document.getElementById('menuTable');
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">جاري التحميل...</td></tr>';
-            const { data, error } = await supabase.from('menu').select('*');
-            if (error) { alert('خطأ في التحميل'); return; }
+            tbody.innerHTML = '<tr><td colspan="4">جاري تحميل الأطباق...</td></tr>';
+            
+            const { data, error } = await supabase.from('menu').select('*').order('id', { ascending: false });
+            if (error) { 
+                alert('خطأ في تحميل الأطباق: ' + error.message); 
+                return; 
+            }
+            
             tbody.innerHTML = '';
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4">لا توجد أطباق حالياً. أضف طبقك الأول!</td></tr>';
+                return;
+            }
+
             data.forEach(item => {
                 tbody.innerHTML += `
                     <tr>
-                        <td><img src="${item.img || ''}"></td>
-                        <td>${item.name || ''}</td>
-                        <td>${item.price || 0} DH</td>
-                        <td><button style="background:#e74c3c; color:white; padding:5px;" onclick="delItem(${item.id})">حذف</button></td>
+                        <td><img src="${item.img || ''}" alt="صورة"></td>
+                        <td style="font-weight: bold; font-size: 17px;">${item.name || ''}</td>
+                        <td style="color: #c5a880; font-weight: bold;">${item.price || 0} DH</td>
+                        <td class="actions">
+                            <button class="edit-btn" onclick="prepareEdit(${item.id}, '${item.name}', ${item.price}, '${item.img || ''}')">تعديل</button>
+                            <button class="del-btn" onclick="delItem(${item.id})">حذف</button>
+                        </td>
                     </tr>
                 `;
             });
         }
 
-        async function addItem() {
+        // رفع الصورة وتخزينها في Supabase Storage
+        async function uploadImage() {
+            const fileInput = document.getElementById('imageFile');
+            if (fileInput.files.length === 0) return null;
+
+            const file = fileInput.files[0];
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Date.now()}.${fileExt}`;
+            const filePath = `${fileName}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('menu-images')
+                .upload(filePath, file);
+
+            if (uploadError) {
+                alert('فشل رفع الصورة: ' + uploadError.message);
+                return null;
+            }
+
+            // الحصول على الرابط العام للصورة
+            const { data } = supabase.storage
+                .from('menu-images')
+                .getPublicUrl(filePath);
+
+            return data.publicUrl;
+        }
+
+        // إضافة أو تحديث طبق
+        async function saveItem() {
+            const id = document.getElementById('editId').value;
             const name = document.getElementById('nameInput').value;
             const price = document.getElementById('priceInput').value;
-            const img = document.getElementById('imgInput').value;
-            if (!name || !price) { alert('الرجاء إدخال الاسم والسعر'); return; }
+
+            if (!name || !price) { 
+                alert('الرجاء إدخال اسم الطبق والسعر على الأقل'); 
+                return; 
+            }
+
+            let imgUrl = document.getElementById('imageFile').getAttribute('data-current-img') || '';
             
-            const { error } = await supabase.from('menu').insert([{ name, price, img }]);
-            if (error) {
-                alert('حدث خطأ أثناء الإضافة: ' + error.message);
+            // إذا اختار المستخدم صورة جديدة، نقوم برفعها
+            const newImgUrl = await uploadImage();
+            if (newImgUrl) {
+                imgUrl = newImgUrl;
+            }
+
+            if (id) {
+                // عملية تعديل طبق موجود
+                const { error } = await supabase.from('menu')
+                    .update({ name, price: parseFloat(price), img: imgUrl })
+                    .eq('id', id);
+
+                if (error) {
+                    alert('خطأ أثناء التعديل: ' + error.message);
+                } else {
+                    alert('تم تعديل الطبق بنجاح!');
+                    resetForm();
+                    loadItems();
+                }
             } else {
-                alert('تم إضافة الطبق بنجاح!');
-                document.getElementById('nameInput').value = '';
-                document.getElementById('priceInput').value = '';
-                document.getElementById('imgInput').value = '';
-                loadItems();
+                // عملية إضافة طبق جديد
+                const { error } = await supabase.from('menu')
+                    .insert([{ name, price: parseFloat(price), img: imgUrl }]);
+
+                if (error) {
+                    alert('خطأ أثناء الإضافة: ' + error.message);
+                } else {
+                    alert('تم إضافة الطبق بنجاح!');
+                    resetForm();
+                    loadItems();
+                }
             }
         }
 
+        // تجهيز بيانات الطبق للتعديل
+        function prepareEdit(id, name, price, img) {
+            document.getElementById('editId').value = id;
+            document.getElementById('nameInput').value = name;
+            document.getElementById('priceInput').value = price;
+            document.getElementById('imageFile').setAttribute('data-current-img', img);
+            
+            document.getElementById('formTitle').innerText = 'تعديل بيانات الطبق';
+            document.getElementById('saveBtn').innerText = 'حفظ التعديلات';
+            document.getElementById('cancelBtn').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // إلغاء وضع التعديل
+        function resetForm() {
+            document.getElementById('editId').value = '';
+            document.getElementById('nameInput').value = '';
+            document.getElementById('priceInput').value = '';
+            document.getElementById('imageFile').value = '';
+            document.getElementById('imageFile').removeAttribute('data-current-img');
+            
+            document.getElementById('formTitle').innerText = 'إضافة طبق جديد';
+            document.getElementById('saveBtn').innerText = 'إضافة الطبق للقائمة';
+            document.getElementById('cancelBtn').style.display = 'none';
+        }
+
+        // حذف طبق
         async function delItem(id) {
-            if (confirm('هل أنت متأكد من الحذف؟')) {
-                await supabase.from('menu').delete().eq('id', id);
-                loadItems();
+            if (confirm('هل أنت متأكد من رغبتك في حذف هذا الطبق؟')) {
+                const { error } = await supabase.from('menu').delete().eq('id', id);
+                if (error) {
+                    alert('خطأ أثناء الحذف: ' + error.message);
+                } else {
+                    loadItems();
+                }
             }
         }
 
-        // تشغيل الدالة تلقائياً عند تحميل الصفحة
+        // تشغيل التحميل تلقائياً
         loadItems();
     </script>
 </body>
