@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة إدارة مطعم الوردة الذهبية</title>
+    <style>
+        :root {
+            --gold: #c5a880;
+            --dark-black: #0a0a0a;
+            --card-bg: #121212;
+            --danger: #e74c3c;
+            --success: #2ecc71;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--dark-black);
+            color: #fff;
+            padding: 30px 8%;
+        }
+
+        h1, h2 {
+            color: var(--gold);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* شاشة تسجيل الدخول */
+        #loginSection {
+            max-width: 400px;
+            margin: 100px auto;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 8px;
+            border: 1px solid rgba(197, 168, 128, 0.2);
+            text-align: center;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: #1a1a1a;
+            border: 1px solid var(--gold);
+            color: white;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: var(--gold);
+            color: var(--dark-black);
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .btn-delete {
+            background-color: var(--danger);
+            color: white;
+            padding: 6px 15px;
+            width: auto;
+            font-size: 14px;
+        }
+
+        .btn-edit {
+            background-color: #3498db;
+            color: white;
+            padding: 6px 15px;
+            width: auto;
+            font-size: 14px;
+            margin-left: 5px;
+        }
+
+        /* لوحة التحكم */
+        #dashboardSection {
+            display: none;
+        }
+
+        .admin-form {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid rgba(197, 168, 128, 0.2);
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: right;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        th {
+            background-color: #1a1a1a;
+            color: var(--gold);
+        }
+
+        img.thumb {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <!-- 1. شاشة الدخول المخصصة لصاحب المطعم -->
+    <div id="loginSection">
+        <h1>إدارة قائمة الطعام ✨</h1>
+        <p style="color: #aaa; margin-bottom: 20px;">أدخل كلمة المرور الخاصة بالإدارة</p>
+        <input type="password" id="passInput" placeholder="كلمة المرور">
+        <button onclick="checkPassword()">دخول</button>
+        <p id="loginError" style="color: var(--danger); margin-top: 10px; display: none;">كلمة المرور غير صحيحة!</p>
+    </div>
+
+    <!-- 2. لوحة التحكم بالأطباق -->
+    <div id="dashboardSection">
+        <h1>لوحة تحكم مطعم الوردة الذهبية</h1>
+        
+        <!-- نموذج إضافة/تعديل طبق -->
+        <div class="admin-form">
+            <h2 id="formTitle">إضافة طبق جديد</h2>
+            <input type="hidden" id="itemId">
+            <input type="text" id="itemName" placeholder="اسم الطبق (مثال: شاورما دجاج)">
+            <input type="number" id="itemPrice" placeholder="السعر بالدرهم (مثال: 50)">
+            <input type="text" id="itemImg" placeholder="رابط صورة الطبق (URL)">
+            <button id="saveBtn" onclick="saveItem()">إضافة الطبق</button>
+            <button id="cancelBtn" onclick="resetForm()" style="background: #555; display: none; margin-top: 5px;">إلغاء التعديل</button>
+        </div>
+
+        <!-- جدول الأطباق الحالية -->
+        <h2>الأطباق المعروضة حالياً</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>الصورة</th>
+                    <th>اسم الطبق</th>
+                    <th>السعر (DH)</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody id="adminMenuTable">
+                <!-- سيتم تحميل الأطباق هنا -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // إعدادات Supabase
+        const SUPABASE_URL = 'https://vwcpxsabhtojubraiajp.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_cnRZjVTJIbTkngCM97VuLA_3R-rf3Y6';
+        const { createClient } = window.supabase;
+        const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // كلمة مرور لوحة التحكم (يمكنكِ تغييرها لأي كلمة يريدها العميل)
+        const ADMIN_PASSWORD = "123"; 
+
+        function checkPassword() {
+            const pwd = document.getElementById('passInput').value;
+            if (pwd === ADMIN_PASSWORD) {
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('dashboardSection').style.display = 'block';
+                loadAdminMenu();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
+        }
+
+        // جلب وتحديث جدول الأطباق في لوحة التحكم
+        async function loadAdminMenu() {
+            const tableBody = document.getElementById('adminMenuTable');
+            tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;">جاري التحميل...</td></tr>';
+
+            const { data, error } = await supabase.from('menu').select('*');
+
+            if (error) {
+                alert('خطأ في جلب البيانات: ' + error.message);
+                return;
+            }
+
+            tableBody.innerHTML = '';
+            data.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><img src="${item.img || ''}" class="thumb"></td>
+                    <td><strong>${item.name || ''}</strong></td>
+                    <td>${item.price || 0} DH</td>
+                    <td>
+                        <button class="btn-edit" onclick="editItem(${item.id}, '${item.name}', ${item.price}, '${item.img}')">تعديل</button>
+                        <button class="btn-delete" onclick="deleteItem(${item.id})">حذف</button>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        // إضافة أو تعديل طبق
+        async function saveItem() {
+            const id = document.getElementById('itemId').value;
+            const name = document.getElementById('itemName').value;
+            const price = document.getElementById('itemPrice').value;
+            const img = document.getElementById('itemImg').value;
+
+            if (!name || !price) {
+                alert('يرجى ملء الاسم والسعر على الأقل!');
+                return;
+            }
+
+            if (id) {
+                // تعديل طبق حالي
+                const { error } = await supabase.from('menu').update({ name, price, img }).eq('id', id);
+                if (error) alert('خطأ أثناء التعديل: ' + error.message);
+            } else {
+                // إضافة طبق جديد
+                const { error } = await supabase.from('menu').insert([{ name, price, img }]);
+                if (error) alert('خطأ أثناء الإضافة: ' + error.message);
+            }
+
+            resetForm();
+            loadAdminMenu();
+            alert('تمت العملية بنجاح!');
+        }
+
+        // الإعداد لتعديل طبق
+        function editItem(id, name, price, img) {
+            document.getElementById('itemId').value = id;
+            document.getElementById('itemName').value = name;
+            document.getElementById('itemPrice').value = price;
+            document.getElementById('itemImg').value = img;
+
+            document.getElementById('formTitle').innerText = 'تعديل الطبق';
+            document.getElementById('saveBtn').innerText = 'حفظ التعديلات';
+            document.getElementById('cancelBtn').style.display = 'block';
+        }
+
+        // حذف طبق
+        async function deleteItem(id) {
+            if (confirm('هل أنت تأكد من رغبتك في حذف هذا الطبق؟')) {
+                const { error } = await supabase.from('menu').delete().eq('id', id);
+                if (error) {
+                    alert('خطأ أثناء الحذف: ' + error.message);
+                } else {
+                    loadAdminMenu();
+                    alert('تم الحذف بنجاح!');
+                }
+            }
+        }
+
+        // إعادة ضبط النموذج
+        function resetForm() {
+            document.getElementById('itemId').value = '';
+            document.getElementById('itemName').value = '';
+            document.getElementById('itemPrice').value = '';
+            document.getElementById('itemImg').value = '';
+
+            document.getElementById('formTitle').innerText = 'إضافة طبق جديد';
+            document.getElementById('saveBtn').innerText = 'إضافة الطبق';
+            document.getElementById('cancelBtn').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
