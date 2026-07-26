@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة إدارة مطعم Golden Rose</title>
+    <style>
+        body { background-color: #0a0a0a; color: #fff; font-family: Tahoma, sans-serif; padding: 20px; text-align: center; }
+        .box { max-width: 600px; margin: 20px auto; background: #121212; padding: 20px; border-radius: 8px; border: 1px solid #c5a880; text-align: right; }
+        input, button { width: 100%; padding: 12px; margin: 8px 0; font-size: 16px; border-radius: 4px; border: 1px solid #333; background: #1a1a1a; color: white; box-sizing: border-box; }
+        button { background: #c5a880; color: #000; font-weight: bold; cursor: pointer; border: none; }
+        button:hover { background: #d4b890; }
+        table { width: 100%; margin-top: 20px; border-collapse: collapse; background: #121212; }
+        th, td { padding: 12px; border: 1px solid #333; text-align: center; }
+        th { color: #c5a880; }
+        img { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; }
+        .actions button { padding: 6px 10px; margin: 2px; font-size: 14px; width: auto; }
+        .edit-btn { background: #3498db; color: white; }
+        .del-btn { background: #e74c3c; color: white; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <h1 style="color: #c5a880;">لوحة تحكم مطعم Golden Rose</h1>
+    
+    <div class="box">
+        <h3 id="formTitle" style="color: #c5a880; margin-top:0;">إضافة طبق جديد</h3>
+        <input type="hidden" id="oldNameInput"> <!-- لتخزين الاسم القديم عند التعديل -->
+        
+        <label>اسم الطبق:</label>
+        <input type="text" id="nameInput" placeholder="مثال: bergre">
+        
+        <label>السعر:</label>
+        <input type="text" id="priceInput" placeholder="مثال: 60">
+        
+        <label>صورة الطبق (اختياري عند التعديل):</label>
+        <input type="file" id="imageFile" accept="image/*">
+
+        <button onclick="saveItem()" id="saveBtn">إضافة الطبق للقائمة</button>
+        <button onclick="resetForm()" id="cancelBtn" style="background: #555; display:none;">إلغاء التعديل</button>
+    </div>
+
+    <div style="max-width: 900px; margin: 0 auto;">
+        <h3>جميع الأطباق الحالية في القائمة</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>الصورة</th>
+                    <th>الاسم</th>
+                    <th>السعر</th>
+                    <th>التحكم</th>
+                </tr>
+            </thead>
+            <tbody id="menuTable">
+                <tr><td colspan="4">جاري تحميل الأطباق...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://vwcpxsabhtojubraiajp.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_cnRZjVTJIbTkngCM97VuLA_3R-rf3Y6';
+        const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function loadItems() {
+            const tbody = document.getElementById('menuTable');
+            const { data, error } = await db.from('menu').select('*');
+            
+            if (error) { 
+                tbody.innerHTML = `<tr><td colspan="4" style="color:red;">خطأ: ${error.message}</td></tr>`;
+                return; 
+            }
+            
+            tbody.innerHTML = '';
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4">لا توجد أطباق حالياً.</td></tr>';
+                return;
+            }
+
+            data.forEach(item => {
+                let imgSrc = item.img || '';
+                tbody.innerHTML += `
+                    <tr>
+                        <td><img src="${imgSrc}" alt="صورة" onerror="this.src='' "></td>
+                        <td style="font-weight: bold; font-size: 17px;">${item.name || ''}</td>
+                        <td style="color: #c5a880; font-weight: bold;">${item.price || 0}</td>
+                        <td class="actions">
+                            <button class="edit-btn" onclick="startEdit('${item.name}', '${item.price}', '${item.img || ''}')">تعديل</button>
+                            <button class="del-btn" onclick="delItem('${item.name}')">حذف</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        async function uploadImage() {
+            const fileInput = document.getElementById('imageFile');
+            if (fileInput.files.length === 0) return null;
+
+            const file = fileInput.files[0];
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Date.now()}.${fileExt}`;
+
+            const { error: uploadError } = await db.storage
+                .from('menu-images')
+                .upload(fileName, file);
+
+            if (uploadError) {
+                alert('فشل رفع الصورة: ' + uploadError.message);
+                return null;
+            }
+
+            const { data } = db.storage
+                .from('menu-images')
+                .getPublicUrl(fileName);
+
+            return data.publicUrl;
+        }
+
+        // تجهيز بيانات الطبق للتعديل
+        function startEdit(name, price, img) {
+            document.getElementById('oldNameInput').value = name;
+            document.getElementById('nameInput').value = name;
+            document.getElementById('priceInput').value = price;
+            document.getElementById('imageFile').setAttribute('data-current-img', img);
+            
+            document.getElementById('formTitle').innerText = 'تعديل بيانات الطبق';
+            document.getElementById('saveBtn').innerText = 'حفظ التعديلات';
+            document.getElementById('cancelBtn').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // إلغاء وضع التعديل
+        function resetForm() {
+            document.getElementById('oldNameInput').value = '';
+            document.getElementById('nameInput').value = '';
+            document.getElementById('priceInput').value = '';
+            document.getElementById('imageFile').value = '';
+            document.getElementById('imageFile').removeAttribute('data-current-img');
+            
+            document.getElementById('formTitle').innerText = 'إضافة طبق جديد';
+            document.getElementById('saveBtn').innerText = 'إضافة الطبق للقائمة';
+            document.getElementById('cancelBtn').style.display = 'none';
+        }
+
+        async function saveItem() {
+            const oldName = document.getElementById('oldNameInput').value;
+            const name = document.getElementById('nameInput').value.trim();
+            const price = document.getElementById('priceInput').value.trim();
+
+            if (!name || !price) { 
+                alert('الرجاء إدخال اسم الطبق والسعر'); 
+                return; 
+            }
+
+            let imgUrl = document.getElementById('imageFile').getAttribute('data-current-img') || '';
+            const newImg = await uploadImage();
+            if (newImg) {
+                imgUrl = newImg;
+            }
+
+            if (oldName) {
+                // عملية تحديث (Update) للطبق الموجود
+                const { error } = await db.from('menu')
+                    .update({ name: name, price: price, img: imgUrl })
+                    .eq('name', oldName);
+
+                if (error) {
+                    alert('خطأ أثناء التعديل: ' + error.message);
+                } else {
+                    alert('تم تعديل الطبق بنجاح!');
+                    resetForm();
+                    loadItems();
+                }
+            } else {
+                // عملية إضافة طبق جديد (Insert)
+                const { error } = await db.from('menu')
+                    .insert([{ name: name, price: price, img: imgUrl }]);
+
+                if (error) {
+                    alert('خطأ أثناء الإضافة: ' + error.message);
+                } else {
+                    alert('تم إضافة الطبق بنجاح!');
+                    resetForm();
+                    loadItems();
+                }
+            }
+        }
+
+        async function delItem(name) {
+            if (confirm(`هل أنت متأكد من حذف الطبق: ${name}؟`)) {
+                const { error } = await db.from('menu').delete().eq('name', name);
+                if (error) {
+                    alert('خطأ أثناء الحذف: ' + error.message);
+                } else {
+                    loadItems();
+                }
+            }
+        }
+
+        loadItems();
+    </script>
+</body>
+</html>
